@@ -5,6 +5,7 @@ import app from '../src/app'
 import User from '../src/models/User'
 import Team from '../src/models/Team'
 import Activity from '../src/models/Activity'
+import Workout from '../src/models/Workout'
 
 let mongoServer: MongoMemoryServer | null = null
 
@@ -31,6 +32,7 @@ beforeEach(async () => {
   await User.deleteMany({})
   await Team.deleteMany({})
   await Activity.deleteMany({})
+  await Workout.deleteMany({})
 })
 
 test('create user -> create team -> add activity -> leaderboard', async () => {
@@ -46,4 +48,32 @@ test('create user -> create team -> add activity -> leaderboard', async () => {
   expect(topUsers.length).toBeGreaterThanOrEqual(1)
   const topId = topUsers[0]._id && topUsers[0]._id._id ? topUsers[0]._id._id : topUsers[0]._id
   expect(String(topId)).toEqual(String(user._id))
+})
+
+test('create workout and query by user', async () => {
+  const { body: user } = await request(app).post('/api/users').send({ name: 'Athlete', email: 'athlete@example.com' }).expect(201)
+
+  const futureDate = new Date(Date.now() + 86400000) // tomorrow
+  const { body: workout } = await request(app).post('/api/workouts').send({
+    user: user._id,
+    title: 'Morning Run',
+    type: 'run',
+    targetDistance: 5,
+    scheduledDate: futureDate
+  }).expect(201)
+
+  expect(workout.completed).toBe(false)
+
+  const { body: userWorkouts } = await request(app).get(`/api/workouts?user=${user._id}`).expect(200)
+  expect(userWorkouts.length).toBe(1)
+  expect(userWorkouts[0].title).toEqual('Morning Run')
+})
+
+test('get API config with environment information', async () => {
+  const { body: config } = await request(app).get('/api/config').expect(200)
+
+  expect(config).toHaveProperty('apiUrl')
+  expect(config).toHaveProperty('environment')
+  expect(config).toHaveProperty('version')
+  expect(config.version).toEqual('0.1.0')
 })
