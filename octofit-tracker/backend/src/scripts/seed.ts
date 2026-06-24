@@ -1,4 +1,5 @@
-import { connectDatabase, disconnectDatabase } from '../database'
+import connectDB from '../database'
+import mongoose from 'mongoose'
 import User from '../models/User'
 import Team from '../models/Team'
 import Activity from '../models/Activity'
@@ -24,7 +25,7 @@ async function seed() {
   console.log('\n🌱 Starting database seed...')
   console.log('Seed the octofit_db database with test data\n')
 
-  await connectDatabase()
+  await connectDB()
 
   try {
     // Clear existing data
@@ -142,10 +143,10 @@ async function seed() {
 
     console.log('\n✨ Seed complete! Database ready for use.\n')
 
-    await disconnectDatabase()
+    await mongoose.disconnect()
   } catch (err) {
     console.error('❌ Seed failed:', err)
-    await disconnectDatabase()
+    await mongoose.disconnect()
     process.exit(1)
   }
 }

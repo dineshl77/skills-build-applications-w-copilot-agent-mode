@@ -1,9 +1,9 @@
 import app from './app'
-import { connectDatabase } from './database'
+import connectDB from './database'
 
 const PORT = process.env.PORT ? Number(process.env.PORT) : 8000
 
-connectDatabase()
+connectDB()
   .then(() => {
     app.listen(PORT, () => console.log(`Server listening on port ${PORT}`))
   })
