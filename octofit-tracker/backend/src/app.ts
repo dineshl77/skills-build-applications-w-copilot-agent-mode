@@ -15,7 +15,7 @@ app.get('/', (req, res) => res.send('OctoFit Tracker API'))
 app.use('/api/users', usersRouter)
 app.use('/api/activities', activitiesRouter)
 app.use('/api/teams', teamsRouter)
-app.use('/api/leaderboards', leaderboardsRouter)
+app.use('/api/leaderboard', leaderboardsRouter)
 app.use('/api/workouts', workoutsRouter)
 app.use('/api/config', configRouter)
 
