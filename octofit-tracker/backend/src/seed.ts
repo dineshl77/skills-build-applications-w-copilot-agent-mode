@@ -1,13 +1,22 @@
-import mongoose from 'mongoose'
+import { connectDatabase, disconnectDatabase } from './database'
 import User from './models/User'
 import Team from './models/Team'
 import Activity from './models/Activity'
 import Workout from './models/Workout'
 
-const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/octofit'
-
+/**
+ * Seed test data for OctoFit Tracker
+ * 
+ * Creates:
+ * - 2 users: Alice and Bob
+ * - 1 team: Team Octo with both users as members
+ * - 2 completed activities: Alice's run and Bob's ride
+ * - 2 planned workouts: Alice's morning run and Bob's evening ride
+ * 
+ * This test data is used for development and integration testing.
+ */
 async function seed() {
-  await mongoose.connect(MONGO_URI)
+  await connectDatabase()
   await Promise.all([User.deleteMany({}), Team.deleteMany({}), Activity.deleteMany({}), Workout.deleteMany({})])
 
   const alice = await User.create({ name: 'Alice', email: 'alice@example.com' })
@@ -29,7 +38,7 @@ async function seed() {
   await Workout.create({ user: bob._id, team: team._id, title: 'Evening Ride', type: 'ride', targetDistance: 20, scheduledDate: nextWeek })
 
   console.log('Seed complete')
-  await mongoose.disconnect()
+  await disconnectDatabase()
 }
 
 seed().catch((err) => {
