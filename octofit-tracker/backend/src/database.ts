@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose from "mongoose"
 
 // MongoDB connection configuration
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/octofit_db'
